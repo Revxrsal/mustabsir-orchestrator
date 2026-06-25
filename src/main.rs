@@ -41,7 +41,7 @@ async fn main() -> anyhow::Result<()> {
     // and its glosses — a clean, well-bounded masʾala for testing.
     let brief = env::args().skip(1).collect::<Vec<_>>().join(" ");
     let brief = if brief.trim().is_empty() {
-        r#"اشرح لي أحكام المسح على الخفين والجوارب عند ابن تيمية"#            .to_string()
+        r#"ما هي أسباب قلّة انتشار المذهب الحنبلي؟"#            .to_string()
     } else {
         brief
     };
