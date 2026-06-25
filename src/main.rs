@@ -64,8 +64,11 @@ async fn main() -> anyhow::Result<()> {
     let table = conn.open_table("chunks").execute().await?;
 
     // The brief is a generation instruction, not a search query. Distill it to
-    // bare Arabic topical keywords before searching.
-    let search_query = distill_query(&brief).await?;
+    // bare Arabic topical keywords before searching; in parallel, extract any
+    // named author/source used to bias retrieval (see the scope block below).
+    // The two Haiku passes are independent, so run them concurrently.
+    let (search_query, scope) = tokio::join!(distill_query(&brief), extract_scope(&brief));
+    let search_query = search_query?;
     println!("Brief: {brief}");
     println!("Search query (distilled): {search_query}");
 
@@ -99,8 +102,8 @@ async fn main() -> anyhow::Result<()> {
     // *bias* (not hard-filter) retrieval: run the same topical hybrid query once
     // scoped to the entity and once unscoped, then rank in-scope hits first and
     // backfill from the general pool. A brief naming nobody behaves exactly as
-    // the topical-only path did.
-    let scope = extract_scope(&brief).await;
+    // the topical-only path did. (The extraction itself ran above, alongside
+    // distillation; here we just turn it into a retrieval filter.)
     let filter = scope_filter(&scope);
     if let Some(f) = &filter {
         println!(
