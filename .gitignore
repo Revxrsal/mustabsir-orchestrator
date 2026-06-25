@@ -1,0 +1,14 @@
+# Project exclude paths
+/services/bge-m3-rs/target/
+/services/bge-m3-rs/.fastembed_cache/
+/target/
+/lancedb/
+/cache/
+/services/bge-m3/.venv
+/book-samples
+/.claude
+/.idea
+*.iml
+.env
+failures.jsonl
+remaining.txt
