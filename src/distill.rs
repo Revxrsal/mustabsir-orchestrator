@@ -6,6 +6,7 @@ use rig::completion::Prompt;
 use rig::providers::anthropic::completion::CLAUDE_HAIKU_4_5;
 
 use crate::ai_providers::anthropic_client;
+use crate::usage::report_usage;
 
 /// System prompt for the query-distillation pass (Haiku). The user's brief is a
 /// *generation* instruction — it carries imperative verbs («اشرح»), book/edition
@@ -33,7 +34,14 @@ pub(crate) async fn distill_query(brief: &str) -> anyhow::Result<String> {
         .preamble(QUERY_DISTILL_PROMPT)
         .max_tokens(256)
         .build();
-    let distilled = agent.prompt(brief).await?;
+    let resp = agent.prompt(brief).extended_details().await?;
+    report_usage(
+        "distill (Haiku)",
+        &crate::usage::Pricing::HAIKU_4_5,
+        &resp.usage,
+        resp.requests(),
+    );
+    let distilled = resp.output;
     let distilled = distilled.trim();
     if distilled.is_empty() {
         Ok(brief.to_string())

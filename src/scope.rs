@@ -47,8 +47,16 @@ pub(crate) async fn extract_scope(brief: &str) -> Scope {
         .preamble(SCOPE_EXTRACT_PROMPT)
         .max_tokens(256)
         .build();
-    let raw = match agent.prompt(brief).await {
-        Ok(s) => s,
+    let raw = match agent.prompt(brief).extended_details().await {
+        Ok(resp) => {
+            crate::usage::report_usage(
+                "scope (Haiku)",
+                &crate::usage::Pricing::HAIKU_4_5,
+                &resp.usage,
+                resp.requests(),
+            );
+            resp.output
+        }
         Err(_) => return Scope::default(),
     };
 

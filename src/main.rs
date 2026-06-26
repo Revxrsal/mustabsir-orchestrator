@@ -7,6 +7,7 @@ pub mod ingest;
 pub mod retrieval;
 pub mod scope;
 pub mod slide_tool;
+pub mod usage;
 
 use crate::ai_providers::anthropic_client;
 use crate::context::expand_context;
@@ -15,6 +16,7 @@ use crate::http::http_client;
 use crate::ingest::pipeline::embed::{LocalBgeM3Model, strip_span_tags};
 use crate::retrieval::hybrid_search;
 use crate::scope::{extract_scope, scope_filter};
+use crate::usage::{report_turns, report_usage};
 use dotenv::dotenv;
 use dotenv_codegen::dotenv;
 use rig::agent::AgentBuilder;
@@ -40,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
     // and its glosses — a clean, well-bounded masʾala for testing.
     let brief = env::args().skip(1).collect::<Vec<_>>().join(" ");
     let brief = if brief.trim().is_empty() {
-        "ما هو شرح حديث (فأحرق على من لا يخرج إلى الصلاة) في فتح الباري؟"            .to_string()
+        "ما هو شرح حديث (فأحرق على من لا يخرج إلى الصلاة) في فتح الباري؟".to_string()
     } else {
         brief
     };
@@ -113,11 +115,17 @@ async fn main() -> anyhow::Result<()> {
     }
 
     println!("--- [ Hybrid Retrieval (dense + BM25, native RRF) ] ---");
-    let general =
-        hybrid_search(&table, q_vec.clone(), &search_query, None, CANDIDATE_POOL).await?;
+    let general = hybrid_search(&table, q_vec.clone(), &search_query, None, CANDIDATE_POOL).await?;
     let scoped = match filter.as_deref() {
         Some(f) => {
-            hybrid_search(&table, q_vec.clone(), &search_query, Some(f), CANDIDATE_POOL).await?
+            hybrid_search(
+                &table,
+                q_vec.clone(),
+                &search_query,
+                Some(f),
+                CANDIDATE_POOL,
+            )
+            .await?
         }
         None => Vec::new(),
     };
@@ -204,9 +212,28 @@ async fn main() -> anyhow::Result<()> {
     // `max_turns(>=2)`: turn 1 calls the tool (splice + validate + build); the
     // final turn lets the model confirm. Validation/build errors are returned to
     // the model so it can self-correct within the remaining turns.
-    let response = agent.prompt(brief).max_turns(4).await?;
-    // let response = "";
-    println!("{response}");
+    //
+    // `.extended_details()` switches the response from a bare `String` to a
+    // `PromptResponse` carrying the run's aggregated token `usage` and a
+    // per-turn `completion_calls` list — that's how we measure where the spend
+    // goes (resent context across turns vs. output) and how many turns it
+    // actually took (incl. any self-correction after a build error).
+    let response = agent.prompt(brief).max_turns(4).extended_details().await?;
+    println!("{}", response.output);
+
+    println!("\n--- [ Generation cost ] ---");
+    let per_turn: Vec<(usize, rig::completion::Usage)> = response
+        .completion_calls()
+        .iter()
+        .map(|c| (c.call_index, c.usage))
+        .collect();
+    report_turns(&per_turn);
+    report_usage(
+        "generator (Sonnet)",
+        &usage::Pricing::SONNET_4,
+        &response.usage,
+        response.requests(),
+    );
 
     Ok(())
 }
