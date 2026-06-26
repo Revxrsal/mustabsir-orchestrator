@@ -5,7 +5,7 @@ use rig::client::CompletionClient;
 use rig::completion::Prompt;
 use rig::providers::anthropic::completion::CLAUDE_HAIKU_4_5;
 
-use crate::anthropic::anthropic_client;
+use crate::ai_providers::anthropic_client;
 
 /// A named author/person (with known honorifics) and/or book/source extracted
 /// from the brief, used to *bias* retrieval toward that entity. Empty everywhere

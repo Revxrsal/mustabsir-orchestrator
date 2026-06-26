@@ -4,7 +4,7 @@
 /target/
 /lancedb/
 /cache/
-/services/bge-m3/.venv
+/.venv
 /book-samples
 /.claude
 /.idea

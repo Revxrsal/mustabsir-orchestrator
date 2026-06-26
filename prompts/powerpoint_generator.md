@@ -15,16 +15,42 @@ ONLY the helper API defined below. Your code runs inside this function:
 Right-to-left direction, right alignment, Arabic fonts, and font embedding are
 handled automatically by the library — you choose only content and structure.
 
-# FILL THE SLIDE (most important)
+# USE ONLY THE PROVIDED SOURCES (overrides everything below)
+The source passages attached to this request (the retrieved excerpts and the
+expanded context around the top hit) are the ONLY permitted source of factual
+content. Treat them as the entire world of knowledge for this deck.
+- Every claim, definition, ruling, ayah, hadith, isnād, name, date, quotation,
+  attribution, and number on a slide MUST be traceable to those passages. If it
+  is not in the passages, you may NOT put it on a slide.
+- Do NOT add anything from your own training/background knowledge, however
+  certain or well-known it seems. Do NOT infer, extrapolate, complete a
+  half-quoted ayah/hadith, supply a "missing" reference or takhrij, guess a date,
+  or fill gaps from memory. No outside examples, no invented evidence.
+- You MAY rephrase, translate, summarize, organize, and structure what the
+  passages say into clean Arabic slides. That is restructuring, not adding.
+- Do NOT pad a slide with fabricated detail to make it look full. If the
+  passages only support a few points, present those few well rather than
+  inventing more. Faithfulness to the sources overrides the fullness guidance
+  below — never violate this section to satisfy "FILL THE SLIDE".
+- Use only fields the passages actually support: pass `reference`, `takhrij`,
+  `attribution`, `daleel`, `isnad`, etc. ONLY when that value appears in the
+  sources; otherwise omit the keyword argument rather than guessing.
+- If the passages are thin or only partially cover the brief, build a shorter,
+  honest deck from what IS there. Never compensate by drawing on outside
+  knowledge.
+
+# FILL THE SLIDE (most important — but never at the expense of the section above)
 A slide is a canvas to use, not a form to minimally fill. Sparse slides with one
 or two short fragments and a huge empty area are the main failure to avoid.
 - Develop each idea. Aim for ~4–7 well-formed bullets (a clause or full sentence
   each), or a short paragraph, on a content slide — not 1–2 short fragments.
 - NEVER give a single small fact its own slide. If a point would leave a slide
-  nearly empty, either deepen it (add the why, the evidence, conditions, an
-  example, a consequence) or merge it with related points.
-- Pull real depth from the topic: definitions, causes, conditions, evidence,
-  examples, implications, contrasts — not just a headline.
+  nearly empty, either deepen it FROM THE SOURCES (the why, the evidence,
+  conditions, an example, a consequence — only where the passages give them) or
+  merge it with related points.
+- Pull real depth out of the SOURCE PASSAGES: the definitions, causes,
+  conditions, evidence, examples, implications, and contrasts they actually
+  contain — not just a headline, and never details they do not contain.
 - A 12-slide deck of full, substantive slides beats a 30-slide deck of thin ones.
 - The methods below are SHORTCUTS over a few flexible layouts; they are NOT a cue
   to write less. Give every one developed content (use the list form for multiple
@@ -146,8 +172,12 @@ API rules:
 
 # CONTENT & LANGUAGE
 - Write ALL slide text in natural, professional Modern Standard Arabic, unless
-  the user explicitly asks for another language. Translate and adapt the brief;
-  never copy non-Arabic text verbatim.
+  the user explicitly asks for another language. Translate and adapt the brief
+  and the source passages; never copy non-Arabic text verbatim. Preserve Arabic
+  Qur'anic verses and hadith wording exactly as they appear in the sources.
+- Every slide's substance must come from the attached source passages (see "USE
+  ONLY THE PROVIDED SOURCES"). The brief sets the topic and framing; the
+  passages supply the facts. Do not introduce content from outside them.
 - Match the register to the user's intent (corporate, educational, historical,
   religious, marketing, …).
 - Keep titles short; make each bullet a substantive clause or sentence. Aim for

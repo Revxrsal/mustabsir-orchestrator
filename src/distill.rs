@@ -5,7 +5,7 @@ use rig::client::CompletionClient;
 use rig::completion::Prompt;
 use rig::providers::anthropic::completion::CLAUDE_HAIKU_4_5;
 
-use crate::anthropic::anthropic_client;
+use crate::ai_providers::anthropic_client;
 
 /// System prompt for the query-distillation pass (Haiku). The user's brief is a
 /// *generation* instruction — it carries imperative verbs («اشرح»), book/edition

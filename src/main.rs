@@ -1,4 +1,4 @@
-pub mod anthropic;
+pub mod ai_providers;
 pub mod arrow_cols;
 pub mod context;
 pub mod distill;
@@ -8,7 +8,7 @@ pub mod retrieval;
 pub mod scope;
 pub mod slide_tool;
 
-use crate::anthropic::anthropic_client;
+use crate::ai_providers::anthropic_client;
 use crate::context::expand_context;
 use crate::distill::distill_query;
 use crate::http::http_client;
@@ -40,7 +40,7 @@ async fn main() -> anyhow::Result<()> {
     // and its glosses — a clean, well-bounded masʾala for testing.
     let brief = env::args().skip(1).collect::<Vec<_>>().join(" ");
     let brief = if brief.trim().is_empty() {
-        r#"أريد بحثًا عن أحكام الأضحية والعقيقة عند السادة الحنابلة. مظهر البحث يجب أن يكون باللون البلوري"#            .to_string()
+        "ما هو شرح حديث (فأحرق على من لا يخرج إلى الصلاة) في فتح الباري؟"            .to_string()
     } else {
         brief
     };
@@ -205,7 +205,8 @@ async fn main() -> anyhow::Result<()> {
     // final turn lets the model confirm. Validation/build errors are returned to
     // the model so it can self-correct within the remaining turns.
     let response = agent.prompt(brief).max_turns(4).await?;
-
+    // let response = "";
     println!("{response}");
+
     Ok(())
 }

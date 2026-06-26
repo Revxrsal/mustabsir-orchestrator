@@ -22,7 +22,9 @@ from pathlib import Path
 BOOKS_ROOT = Path(
     r"C:\Users\Ali\.cache\huggingface\hub\datasets--AuthenticIlm--Shamela4_Full_DB"
     r"\snapshots\07554bee488a12955dd5231d08487ae7ce767d1e",
-    r"17__الفقه-الحنبلي"
+    # r"17__الفقه-الحنبلي"
+    "07__شروح-الحديث",
+    "1455__فتح-الباري-بشرح-البخاري-ط-السلفية"
 )
 
 INGEST_BIN = "shamela-ingest"
