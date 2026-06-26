@@ -950,31 +950,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ba7ith-orchestrator"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "arrow",
- "clap",
- "dotenv",
- "dotenv_codegen",
- "futures",
- "lance-index",
- "lancedb",
- "once_cell",
- "regex",
- "reqwest 0.13.4",
- "rig",
- "schemars 1.2.1",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "base64"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4780,6 +4755,31 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.118",
+]
+
+[[package]]
+name = "mustabsir-orchestrator"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arrow",
+ "clap",
+ "dotenv",
+ "dotenv_codegen",
+ "futures",
+ "lance-index",
+ "lancedb",
+ "once_cell",
+ "regex",
+ "reqwest 0.13.4",
+ "rig",
+ "schemars 1.2.1",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

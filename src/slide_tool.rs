@@ -2,7 +2,7 @@
 //!
 //! The model's only job is to emit one call to this tool with a single
 //! `python_code` argument: the statements that go inside the body of
-//! `build_content(deck)` in the `ba7ith-ppt-gen` project. This tool is the host
+//! `build_content(deck)` in the `mustabsir-ppt-gen` project. This tool is the host
 //! side described in `system-prompt.md` §4 — it splices that code into
 //! `generate.py`, validates it, and builds the `.pptx`.
 //!
@@ -12,7 +12,7 @@
 //!   3. Replace the text between the `EDIT … CONTENT ONLY` markers in
 //!      `generate.py` with the indented code.
 //!   4. Validate the spliced file with `ast.parse` (clean SyntaxError feedback).
-//!   5. Build the deck with `uv run ba7ith-ppt-gen -o <output>`.
+//!   5. Build the deck with `uv run mustabsir-ppt-gen -o <output>`.
 //!
 //! On any failure the original `generate.py` is restored, and the error string
 //! is returned to the model so it can correct itself on the next turn.
@@ -80,7 +80,7 @@ pub enum SlideToolError {
 /// The slide-generation tool. Construct with [`UpdateBuildContent::new`] and
 /// register it on a rig agent with `.tool(...)`.
 pub struct UpdateBuildContent {
-    /// Root of the `ba7ith-ppt-gen` project (where `uv` is run).
+    /// Root of the `mustabsir-ppt-gen` project (where `uv` is run).
     project_dir: PathBuf,
     /// Path to `generate.py` whose `build_content` body is rewritten.
     generate_py: PathBuf,
@@ -91,15 +91,15 @@ pub struct UpdateBuildContent {
 }
 
 impl UpdateBuildContent {
-    /// Build the tool from the `ba7ith-ppt-gen` project directory, using the
-    /// default `generate.py` location, `ba7ith-output.pptx`, and the `uv` runner.
+    /// Build the tool from the `mustabsir-ppt-gen` project directory, using the
+    /// default `generate.py` location, `mustabsir-output.pptx`, and the `uv` runner.
     pub fn new(project_dir: impl Into<PathBuf>) -> Self {
         let project_dir = project_dir.into();
         let generate_py = project_dir.join("src/ba7ith_ppt_gen/generate.py");
         Self {
             project_dir,
             generate_py,
-            output: "ba7ith-output.pptx".to_string(),
+            output: "mustabsir-output.pptx".to_string(),
             runner: "uv".to_string(),
         }
     }

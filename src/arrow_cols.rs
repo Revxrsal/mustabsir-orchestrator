@@ -2,7 +2,7 @@
 //! `RecordBatch` with a clear error when it is missing or the wrong type.
 //! Shared by the retrieval and context-expansion passes.
 
-use arrow::array::{Int32Array, ListArray, StringArray};
+use arrow::array::{Array, Int32Array, LargeStringArray, ListArray, StringArray};
 
 pub(crate) fn col_i32<'a>(
     batch: &'a arrow::record_batch::RecordBatch,
@@ -14,14 +14,27 @@ pub(crate) fn col_i32<'a>(
         .ok_or_else(|| anyhow::anyhow!("missing/!i32 column {name}"))
 }
 
-pub(crate) fn col_str<'a>(
-    batch: &'a arrow::record_batch::RecordBatch,
+/// Extract a string column as owned values, accepting both `Utf8` and
+/// `LargeUtf8`. LanceDB's hybrid-search RRF path upcasts `Utf8` columns to
+/// `LargeUtf8` in the fused result, so the downcast must handle both types.
+pub(crate) fn col_str(
+    batch: &arrow::record_batch::RecordBatch,
     name: &str,
-) -> anyhow::Result<&'a StringArray> {
-    batch
+) -> anyhow::Result<Vec<String>> {
+    let col = batch
         .column_by_name(name)
-        .and_then(|c| c.as_any().downcast_ref::<StringArray>())
-        .ok_or_else(|| anyhow::anyhow!("missing/!str column {name}"))
+        .ok_or_else(|| anyhow::anyhow!("missing/!str column {name}"))?;
+    if let Some(arr) = col.as_any().downcast_ref::<StringArray>() {
+        return Ok((0..arr.len())
+            .map(|i| if arr.is_null(i) { String::new() } else { arr.value(i).to_string() })
+            .collect());
+    }
+    if let Some(arr) = col.as_any().downcast_ref::<LargeStringArray>() {
+        return Ok((0..arr.len())
+            .map(|i| if arr.is_null(i) { String::new() } else { arr.value(i).to_string() })
+            .collect());
+    }
+    Err(anyhow::anyhow!("missing/!str column {name}"))
 }
 
 pub(crate) fn col_list<'a>(

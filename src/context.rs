@@ -75,9 +75,9 @@ pub(crate) async fn expand_context(
             rows.push((
                 seq.value(i),
                 cidx.value(i),
-                cid.value(i).to_string(),
+                cid[i].clone(),
                 chapter_at(path, i),
-                text.value(i).to_string(),
+                text[i].clone(),
             ));
         }
     }

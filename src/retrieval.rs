@@ -34,7 +34,7 @@ pub(crate) async fn hybrid_search(
         let ids = col_str(batch, "chunk_id")?;
         let text = col_str(batch, "text")?;
         for i in 0..batch.num_rows() {
-            out.push((ids.value(i).to_string(), text.value(i).to_string()));
+            out.push((ids[i].clone(), text[i].clone()));
         }
     }
     Ok(out)

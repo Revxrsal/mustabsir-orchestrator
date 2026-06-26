@@ -26,8 +26,7 @@ use slide_tool::UpdateBuildContent;
 use std::collections::HashSet;
 use std::env;
 
-/// The verbatim system prompt from `ba7ith-ppt-gen/system-prompt.md` §1.
-const SYSTEM_PROMPT: &str = include_str!("system-prompt.md");
+const GENERATOR_PROMPT: &str = include_str!("../prompts/powerpoint_generator.md");
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -41,7 +40,7 @@ async fn main() -> anyhow::Result<()> {
     // and its glosses — a clean, well-bounded masʾala for testing.
     let brief = env::args().skip(1).collect::<Vec<_>>().join(" ");
     let brief = if brief.trim().is_empty() {
-        r#"ما هي أسباب قلّة انتشار المذهب الحنبلي؟"#            .to_string()
+        r#"أريد بحثًا عن أحكام الأضحية والعقيقة عند السادة الحنابلة. مظهر البحث يجب أن يكون باللون البلوري"#            .to_string()
     } else {
         brief
     };
@@ -94,7 +93,7 @@ async fn main() -> anyhow::Result<()> {
     // as the final cut, so fetch a deep pool for RRF to fuse over, then show only
     // the strongest few.
     const CANDIDATE_POOL: usize = 30;
-    const DISPLAY_N: usize = 6;
+    const DISPLAY_N: usize = 7;
 
     // Person/source-aware retrieval. The brief may name an author («عند ابن
     // تيمية») or a book («كما في أخصر المختصرات»), but distillation strips those
@@ -181,7 +180,7 @@ async fn main() -> anyhow::Result<()> {
     // per-brief documents stay uncached; the static SYSTEM_PROMPT and the tool
     // definition remain cached via `with_prompt_caching`.
     let mut builder = AgentBuilder::new(generation_model)
-        .preamble(SYSTEM_PROMPT)
+        .preamble(GENERATOR_PROMPT)
         .max_tokens(8000)
         // The strong system prompt makes the model emit exactly one tool call.
         // `tool_choice` is left on Auto so that after the tool builds the deck
