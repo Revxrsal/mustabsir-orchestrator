@@ -42,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
     // and its glosses — a clean, well-bounded masʾala for testing.
     let brief = env::args().skip(1).collect::<Vec<_>>().join(" ");
     let brief = if brief.trim().is_empty() {
-        "ما هو شرح حديث (فأحرق على من لا يخرج إلى الصلاة) في فتح الباري؟".to_string()
+        "أريد شرحًا لأحكام الحيض والنفاس".to_string()
     } else {
         brief
     };
