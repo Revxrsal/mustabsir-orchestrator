@@ -265,10 +265,18 @@ impl Tool for UpdateBuildContent {
             return Err(SlideToolError::Build(stderr_or_stdout(&build)));
         }
 
+        // The build may have written to a fallback name (e.g. "… (1).pptx") if
+        // the requested file was locked (open in PowerPoint). Trust the path the
+        // build reported over the requested one so we point at the real file.
+        let stdout = String::from_utf8_lossy(&build.stdout);
+        let output_path = parse_written_path(&stdout)
+            .map(|rel| abs_output(&self.project_dir, &rel))
+            .unwrap_or_else(|| abs_output(&self.project_dir, &self.output));
+
         Ok(SlideBuildResult {
             status: "ok".to_string(),
-            output_path: abs_output(&self.project_dir, &self.output),
-            build_stdout: String::from_utf8_lossy(&build.stdout).trim().to_string(),
+            output_path,
+            build_stdout: stdout.trim().to_string(),
         })
     }
 }
@@ -282,6 +290,24 @@ fn stderr_or_stdout(out: &Output) -> String {
     } else {
         trimmed.to_string()
     }
+}
+
+/// Extract the written path from the build's `Wrote <path> (Arabic fonts
+/// embedded)` line, so a locked-file fallback (`… (1).pptx`) is reported
+/// correctly. Returns the path relative to the project dir, as printed.
+fn parse_written_path(stdout: &str) -> Option<String> {
+    for line in stdout.lines() {
+        if let Some(rest) = line.trim().strip_prefix("Wrote ") {
+            let path = rest
+                .strip_suffix(" (Arabic fonts embedded)")
+                .unwrap_or(rest)
+                .trim();
+            if !path.is_empty() {
+                return Some(path.to_string());
+            }
+        }
+    }
+    None
 }
 
 /// Absolute path of the output file, best-effort.
